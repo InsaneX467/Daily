@@ -1,0 +1,24 @@
+{
+  "name": "LifeQuest",
+  "short_name": "LifeQuest",
+  "description": "Transform your daily productivity into an epic RPG adventure. Track habits, complete quests, and level up your real life.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#a855f7",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
