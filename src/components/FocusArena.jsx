@@ -83,7 +83,7 @@ export default function FocusArena() {
   };
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24, alignItems:'center' }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16, alignItems:'center' }}>
       {/* Header */}
       <div className="page-header" style={{ width:'100%', textAlign:'left' }}>
         <h1>⚔️ Focus Arena</h1>
@@ -91,7 +91,7 @@ export default function FocusArena() {
       </div>
 
       {/* Stats bar */}
-      <div style={{ display:'flex', gap:12, width:'100%', maxWidth:600, flexWrap:'wrap' }}>
+      <div style={{ display:'flex', gap:8, width:'100%', maxWidth:600, flexWrap:'wrap' }}>
         <div className="stat-chip xp" style={{ flex:1, justifyContent:'center', padding:'8px 12px' }}>
           <Clock size={14} /> {player.totalFocus} sessions
         </div>
@@ -119,7 +119,7 @@ export default function FocusArena() {
 
       {/* Duration selector */}
       {!isActive && !victory && (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:10, width:'100%', maxWidth:600 }}>
+        <div className="duration-grid">
           {DURATIONS.map(d => (
             <button key={d.value}
               onClick={() => setDuration(d.value)}
@@ -215,13 +215,13 @@ export default function FocusArena() {
             </div>
 
             {/* Circular timer */}
-            <div style={{ position:'relative', width:240, height:240 }}>
-              <svg width={240} height={240} style={{ transform:'rotate(-90deg)' }}>
-                <circle cx={120} cy={120} r={110} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={6} />
-                <circle cx={120} cy={120} r={110} fill="none"
+            <div style={{ position:'relative', width:200, height:200 }}>
+              <svg width={200} height={200} style={{ transform:'rotate(-90deg)' }}>
+                <circle cx={100} cy={100} r={90} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={5} />
+                <circle cx={100} cy={100} r={90} fill="none"
                   stroke={isActive ? 'var(--accent-purple)' : 'var(--bg-tertiary)'}
-                  strokeWidth={6} strokeLinecap="round"
-                  strokeDasharray={`${(progressPercent / 100) * circumference} ${circumference}`}
+                  strokeWidth={5} strokeLinecap="round"
+                  strokeDasharray={`${(progressPercent / 100) * (2 * Math.PI * 90)} ${2 * Math.PI * 90}`}
                   style={{
                     transition:'stroke-dasharray 1s linear',
                     filter: isActive ? 'drop-shadow(0 0 10px rgba(168,85,247,0.6))' : 'none',
@@ -232,7 +232,7 @@ export default function FocusArena() {
                 display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
               }}>
                 <div style={{
-                  fontSize:48, fontWeight:900, fontFamily:"'JetBrains Mono',monospace",
+                  fontSize:40, fontWeight:900, fontFamily:"'JetBrains Mono',monospace",
                   color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
                   textShadow: isActive ? '0 0 24px rgba(168,85,247,0.5)' : 'none',
                   letterSpacing:2,

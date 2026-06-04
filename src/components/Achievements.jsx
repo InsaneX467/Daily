@@ -46,7 +46,7 @@ export default function Achievements() {
   };
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
       <div className="page-header">
         <h1>🏅 Achievements</h1>
         <p>Badges of honor for the grind. {unlocked} of {achievements.length} unlocked — keep collecting!</p>

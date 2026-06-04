@@ -137,34 +137,34 @@ export default function QuestLog() {
   const activeQuestTitles = new Set(active.map(q => q.title));
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
-      <div className="page-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
         <div>
           <h1>📜 Quest Log</h1>
-          <p>Your to-do list, gamified! Add tasks as "quests" and earn XP & Gold when you complete them.</p>
+          <p>Your to-do list, gamified! Add tasks as "quests" and earn XP & Gold.</p>
         </div>
-        <div style={{ display:'flex', gap:8 }}>
-          <span className="stat-chip xp">⚔️ {active.length} Active</span>
-          <span className="stat-chip gold">✅ {completed.length} Done</span>
+        <div style={{ display:'flex', gap:6 }}>
+          <span className="stat-chip xp" style={{ fontSize:12 }}>⚔️ {active.length} Active</span>
+          <span className="stat-chip gold" style={{ fontSize:12 }}>✅ {completed.length} Done</span>
         </div>
       </div>
 
       {/* Add quest form */}
-      <form onSubmit={handleAdd} className="glass-panel" style={{ display:'flex', flexDirection:'column', gap:14 }}>
+      <form onSubmit={handleAdd} className="glass-panel" style={{ display:'flex', flexDirection:'column', gap:12 }}>
         <h3>➕ New Quest</h3>
-        <p style={{ fontSize:12, color:'var(--text-muted)', marginTop:-8 }}>Type what you need to do, pick a difficulty and category, then add it.</p>
-        <div style={{ display:'flex', gap:12, alignItems:'center', flexWrap:'wrap' }}>
-          <input className="input" style={{ flex:1, minWidth:200 }} placeholder="What do you need to do? (e.g. Study for 1 hour)" value={title} onChange={e => setTitle(e.target.value)} />
-          <select className="input" style={{ width:180 }} value={diff} onChange={e => setDiff(e.target.value)}>
+        <p style={{ fontSize:12, color:'var(--text-muted)', marginTop:-6 }}>Type what you need to do, pick a difficulty, then add it.</p>
+        <input className="input" placeholder="What do you need to do?" value={title} onChange={e => setTitle(e.target.value)} />
+        <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+          <select className="input" style={{ flex:1, minWidth:140 }} value={diff} onChange={e => setDiff(e.target.value)}>
             {Object.entries(DIFF_CONFIG).map(([k, v]) => (
-              <option key={k} value={k}>{v.label} (Rank {v.rank}) — ×{v.mult}</option>
+              <option key={k} value={k}>{v.label} ({v.rank}) ×{v.mult}</option>
             ))}
           </select>
-          <button type="submit" className="btn btn-primary"><Plus size={16} /> Add Quest</button>
+          <button type="submit" className="btn btn-primary" style={{ flex:'0 0 auto' }}><Plus size={16} /> Add</button>
         </div>
         {/* Category and recurring row */}
-        <div style={{ display:'flex', gap:12, alignItems:'center', flexWrap:'wrap' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+        <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
             <span style={{ fontSize:12, color:'var(--text-secondary)' }}>Category:</span>
             <div style={{ display:'flex', gap:4 }}>
               {CATEGORIES.map(cat => (
@@ -191,12 +191,11 @@ export default function QuestLog() {
           </div>
         </div>
         {/* Reward preview */}
-        <div style={{ display:'flex', alignItems:'center', gap:12, fontSize:13, color:'var(--text-secondary)', flexWrap:'wrap' }}>
-          <span>You'll earn:</span>
-          <span className="stat-chip xp" style={{ fontSize:11, padding:'3px 8px' }}>+{20 * selectedCfg.mult} XP</span>
-          <span className="stat-chip gold" style={{ fontSize:11, padding:'3px 8px' }}>+{10 * selectedCfg.mult} Gold</span>
-          {recurring !== 'none' && <span className="stat-chip streak" style={{ fontSize:11, padding:'3px 8px' }}><RefreshCw size={10} /> {recurring === 'daily' ? 'Repeats daily' : 'Repeats weekly'}</span>}
-          <span style={{ color:'var(--text-muted)', fontSize:12 }}>• {selectedCfg.example}</span>
+        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, color:'var(--text-secondary)', flexWrap:'wrap' }}>
+          <span>Earn:</span>
+          <span className="stat-chip xp" style={{ fontSize:10, padding:'2px 6px' }}>+{20 * selectedCfg.mult} XP</span>
+          <span className="stat-chip gold" style={{ fontSize:10, padding:'2px 6px' }}>+{10 * selectedCfg.mult} Gold</span>
+          {recurring !== 'none' && <span className="stat-chip streak" style={{ fontSize:10, padding:'2px 6px' }}><RefreshCw size={10} /> {recurring === 'daily' ? 'Daily' : 'Weekly'}</span>}
         </div>
       </form>
 
@@ -224,7 +223,7 @@ export default function QuestLog() {
               ))}
             </div>
             {/* Template grid */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:8 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:8 }}>
               {filteredTemplates.map((t, i) => {
                 const cfg = DIFF_CONFIG[t.difficulty];
                 const cat = CATEGORIES.find(c => c.id === t.category);
@@ -266,15 +265,15 @@ export default function QuestLog() {
       </div>
 
       {/* Filter bar */}
-      <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <span style={{ fontSize:13, color:'var(--text-secondary)', marginRight:4 }}>Difficulty:</span>
-        <button className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setFilter('all')}>All ({active.length})</button>
+      <div style={{ display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
+        <span style={{ fontSize:12, color:'var(--text-secondary)' }}>Rank:</span>
+        <button className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setFilter('all')} style={{ fontSize:12 }}>All</button>
         {Object.entries(DIFF_CONFIG).map(([k, v]) => {
           const count = active.filter(q => q.difficulty === k).length;
           return (
-            <button key={k} className={`btn btn-sm ${filter === k ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setFilter(k)}>
-              <span className={`rank-badge rank-${v.rank}`} style={{ width:18, height:18, fontSize:9 }}>{v.rank}</span>
-              {v.label} {count > 0 && `(${count})`}
+            <button key={k} className={`btn btn-sm ${filter === k ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setFilter(k)} style={{ fontSize:12 }}>
+              <span className={`rank-badge rank-${v.rank}`} style={{ width:16, height:16, fontSize:8 }}>{v.rank}</span>
+              {v.label}{count > 0 ? ` (${count})` : ''}
             </button>
           );
         })}

@@ -78,13 +78,13 @@ export default function DailySchedule() {
   };
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
-      <div className="page-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
         <div>
           <h1>📅 Daily Schedule</h1>
           <p>{filledCount} activities planned</p>
         </div>
-        <div style={{ display:'flex', gap:8 }}>
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
           {!isToday && (
             <button className="btn btn-ghost btn-sm" onClick={goToToday}>
               <CalendarDays size={14} /> Today
@@ -95,12 +95,12 @@ export default function DailySchedule() {
       </div>
 
       {/* Date Navigator */}
-      <div className="glass-panel" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:20, padding:'14px 24px' }}>
+      <div className="glass-panel" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12, padding:'12px 16px' }}>
         <button className="btn btn-ghost btn-sm" onClick={() => navigateDate(-1)} style={{ padding:6 }}>
           <ChevronLeft size={20} />
         </button>
-        <div style={{ textAlign:'center', minWidth:240 }}>
-          <div style={{ fontSize:17, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+        <div style={{ textAlign:'center', minWidth:0, flex:1 }}>
+          <div style={{ fontSize:14, fontWeight:700, display:'flex', alignItems:'center', justifyContent:'center', gap:6, flexWrap:'wrap' }}>
             {formatSelectedDate(selectedDate)}
             {relativeLabel && (
               <span style={{

@@ -88,8 +88,8 @@ export default function RewardsShop() {
   const filtered = tierFilter === 'all' ? items : items.filter(i => i.tier === tierFilter);
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
-      <div className="page-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
         <div>
           <h1>🏪 Rewards Shop</h1>
           <p>You grind, you earn, you <strong>treat yourself</strong>. Spend Gold on real-life rewards!</p>

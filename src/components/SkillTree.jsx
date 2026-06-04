@@ -31,11 +31,11 @@ export default function SkillTree() {
   };
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
-      <div className="page-header" style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <div className="page-header">
         <div>
           <h1>🌳 Skill Tree</h1>
-          <p>Build daily habits! Unlike quests (one-time tasks), skills are <strong>recurring habits</strong> you train every day. Each train gives <strong>+25 Skill XP</strong> and <strong>+10 Player XP</strong>.</p>
+          <p>Build daily habits! Skills are <strong>recurring habits</strong> you train every day. Each train gives <strong>+25 Skill XP</strong> and <strong>+10 Player XP</strong>.</p>
         </div>
         <button className="btn btn-primary" onClick={() => setShowAdd(!showAdd)}>
           {showAdd ? <><X size={16} /> Cancel</> : <><Plus size={16} /> Add Skill</>}
@@ -43,20 +43,20 @@ export default function SkillTree() {
       </div>
 
       {/* Daily progress */}
-      <div className="glass-panel" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:16 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <span style={{ fontSize:24 }}>📊</span>
-          <div>
-            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ fontWeight:700, fontSize:15 }}>Daily Training Progress</span>
+      <div className="glass-panel" style={{ display:'flex', flexDirection:'column', gap:10, padding:14 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+          <span style={{ fontSize:20 }}>📊</span>
+          <div style={{ flex:1 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
+              <span style={{ fontWeight:700, fontSize:14 }}>Daily Progress</span>
               {trainedTodayCount === skills.length && skills.length > 0 && (
                 <span className="trained-badge" style={{ fontSize:11, padding:'2px 8px' }}>🎉 All Done!</span>
               )}
             </div>
-            <div style={{ fontSize:13, color:'var(--text-secondary)' }}>{trainedTodayCount} of {skills.length} skills trained today</div>
+            <div style={{ fontSize:12, color:'var(--text-secondary)' }}>{trainedTodayCount} of {skills.length} trained today</div>
           </div>
         </div>
-        <div className="progress-track" style={{ width:200 }}>
+        <div className="progress-track" style={{ width:'100%' }}>
           <div className="progress-fill success" style={{ width: skills.length > 0 ? `${(trainedTodayCount / skills.length) * 100}%` : '0%' }} />
         </div>
       </div>

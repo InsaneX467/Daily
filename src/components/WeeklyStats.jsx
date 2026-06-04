@@ -50,7 +50,7 @@ export default function WeeklyStats() {
   const totalCompleted = quests.filter(q => q.status === 'completed').length;
 
   return (
-    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:24 }}>
+    <div className="animate-in" style={{ display:'flex', flexDirection:'column', gap:16 }}>
       <div className="page-header">
         <h1>📊 Weekly Stats</h1>
         <p>Your productivity over the last 7 days. Track patterns and stay consistent!</p>
@@ -79,11 +79,11 @@ export default function WeeklyStats() {
         <h3 style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
           <BarChart3 size={18} color="var(--xp-blue)" /> Quests Completed Per Day
         </h3>
-        <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:180, padding:'0 8px' }}>
+        <div style={{ display:'flex', alignItems:'flex-end', gap:6, height:140, padding:'0 4px' }}>
           {data.map((d, i) => (
             <div key={d.date} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
               <span style={{ fontSize:12, fontWeight:700, color: d.quests > 0 ? 'var(--xp-blue)' : 'var(--text-muted)' }}>{d.quests}</span>
-              <div style={{ width:'100%', maxWidth:48, borderRadius:'6px 6px 0 0', transition:'height 0.5s ease', height: d.quests > 0 ? `${(d.quests / maxQuests) * 140}px` : '4px',
+              <div style={{ width:'100%', maxWidth:40, borderRadius:'6px 6px 0 0', transition:'height 0.5s ease', height: d.quests > 0 ? `${(d.quests / maxQuests) * 100}px` : '4px',
                 background: d.quests > 0 ? 'linear-gradient(180deg, var(--xp-blue), rgba(59,130,246,0.3))' : 'rgba(255,255,255,0.04)',
                 boxShadow: d.quests > 0 ? '0 0 12px rgba(59,130,246,0.3)' : 'none' }} />
               <span style={{ fontSize:11, color: d.label === 'Today' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: d.label === 'Today' ? 700 : 400 }}>{d.label}</span>
@@ -97,11 +97,11 @@ export default function WeeklyStats() {
         <h3 style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
           <Target size={18} color="var(--accent-purple)" /> Skills Trained Per Day
         </h3>
-        <div style={{ display:'flex', alignItems:'flex-end', gap:8, height:180, padding:'0 8px' }}>
+        <div style={{ display:'flex', alignItems:'flex-end', gap:6, height:140, padding:'0 4px' }}>
           {data.map((d, i) => (
             <div key={d.date} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
               <span style={{ fontSize:12, fontWeight:700, color: d.skills > 0 ? 'var(--accent-purple)' : 'var(--text-muted)' }}>{d.skills}</span>
-              <div style={{ width:'100%', maxWidth:48, borderRadius:'6px 6px 0 0', transition:'height 0.5s ease', height: d.skills > 0 ? `${(d.skills / maxSkills) * 140}px` : '4px',
+              <div style={{ width:'100%', maxWidth:40, borderRadius:'6px 6px 0 0', transition:'height 0.5s ease', height: d.skills > 0 ? `${(d.skills / maxSkills) * 100}px` : '4px',
                 background: d.skills > 0 ? 'linear-gradient(180deg, var(--accent-purple), rgba(168,85,247,0.3))' : 'rgba(255,255,255,0.04)',
                 boxShadow: d.skills > 0 ? '0 0 12px rgba(168,85,247,0.3)' : 'none' }} />
               <span style={{ fontSize:11, color: d.label === 'Today' ? 'var(--accent-cyan)' : 'var(--text-muted)', fontWeight: d.label === 'Today' ? 700 : 400 }}>{d.label}</span>

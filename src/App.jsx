@@ -27,13 +27,14 @@ const NAV = [
   ]},
 ];
 
-// Mobile bottom nav - key tabs only
+// Mobile bottom nav — all key tabs
 const MOBILE_NAV = [
   { id:'dashboard', label:'Home', icon: LayoutDashboard },
   { id:'quests', label:'Quests', icon: Scroll },
   { id:'schedule', label:'Schedule', icon: CalendarDays },
   { id:'skills', label:'Skills', icon: BrainCircuit },
   { id:'arena', label:'Focus', icon: Timer },
+  { id:'shop', label:'Shop', icon: Store },
 ];
 
 function Particles() {
@@ -92,24 +93,24 @@ function OnboardingModal({ onSave }) {
   return (
     <div className="modal-overlay">
       <div className="modal-content animate-scale" style={{ maxWidth:500, textAlign:'center' }}>
-        <div style={{ fontSize:56, marginBottom:12 }}>⚔️</div>
-        <h1 style={{ fontSize:26, marginBottom:6 }}>Welcome to LifeQuest</h1>
-        <p style={{ color:'var(--text-secondary)', marginBottom:20, fontSize:15, lineHeight:1.7 }}>
+        <div style={{ fontSize:48, marginBottom:12 }}>⚔️</div>
+        <h1 style={{ fontSize:24, marginBottom:6 }}>Welcome to LifeQuest</h1>
+        <p style={{ color:'var(--text-secondary)', marginBottom:20, fontSize:14, lineHeight:1.7 }}>
           Turn your daily tasks into epic quests.<br />
           Build habits, earn XP, and level up your real life.
         </p>
 
         {/* Mini feature tour */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:10, marginBottom:24, textAlign:'center' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8, marginBottom:24, textAlign:'center' }}>
           {[
             { icon:'📝', title:'Add Quests', desc:'Turn your tasks into quests with XP & Gold rewards' },
             { icon:'📈', title:'Level Up', desc:'Earn XP to level up and unlock new titles' },
             { icon:'🎁', title:'Earn Rewards', desc:'Spend Gold on real treats you define yourself' },
           ].map(f => (
-            <div key={f.title} style={{ padding:'14px 10px', background:'rgba(255,255,255,0.03)', borderRadius:10, border:'1px solid var(--glass-border)' }}>
-              <div style={{ fontSize:28, marginBottom:6 }}>{f.icon}</div>
-              <div style={{ fontWeight:700, fontSize:13, marginBottom:4 }}>{f.title}</div>
-              <div style={{ fontSize:11, color:'var(--text-muted)', lineHeight:1.5 }}>{f.desc}</div>
+            <div key={f.title} style={{ padding:'12px 8px', background:'rgba(255,255,255,0.03)', borderRadius:10, border:'1px solid var(--glass-border)' }}>
+              <div style={{ fontSize:24, marginBottom:4 }}>{f.icon}</div>
+              <div style={{ fontWeight:700, fontSize:12, marginBottom:4 }}>{f.title}</div>
+              <div style={{ fontSize:10, color:'var(--text-muted)', lineHeight:1.5 }}>{f.desc}</div>
             </div>
           ))}
         </div>
@@ -199,6 +200,20 @@ function App() {
       ))}
 
       <div className="app-shell">
+        {/* Mobile sticky header with player info */}
+        <div className="mobile-header">
+          <div className="level-orb">{player.level}</div>
+          <div className="player-info">
+            <div className="player-name">{heroName || 'Hero'}</div>
+            <div className="player-title">{title}</div>
+          </div>
+          <div className="mobile-stats">
+            <span className="stat-chip gold">💰 {player.gold}</span>
+            <span className="stat-chip streak">🔥 {player.streakCount}</span>
+          </div>
+        </div>
+
+        {/* Desktop sidebar */}
         <aside className="sidebar">
           <div className="sidebar-brand">
             <span className="brand-icon">⚔️</span>
@@ -263,13 +278,19 @@ function App() {
 
         {/* Mobile bottom navigation */}
         <nav className="mobile-nav">
-          {MOBILE_NAV.map(item => (
-            <button key={item.id} className={`mobile-nav-item ${activeTab === item.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(item.id)}>
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          {MOBILE_NAV.map(item => {
+            const badge = getBadge(item);
+            return (
+              <button key={item.id} className={`mobile-nav-item ${activeTab === item.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(item.id)}>
+                <item.icon size={20} />
+                <span>{item.label}</span>
+                {badge !== null && badge > 0 && (
+                  <span className="mobile-nav-badge">{badge}</span>
+                )}
+              </button>
+            );
+          })}
         </nav>
       </div>
     </>
