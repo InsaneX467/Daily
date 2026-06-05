@@ -3,9 +3,47 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 const GameContext = createContext();
 export const useGame = () => useContext(GameContext);
 
-const TITLES = ['Novice','Apprentice','Warrior','Knight','Champion','Hero','Legend','Mythic'];
-const getTitle = (level) => TITLES[Math.min(Math.floor((level - 1) / 3), TITLES.length - 1)];
+const CLASS_DATA = [
+  { title:'Novice',     icon:'🌱', color:'#9ca3af', minLevel:1 },
+  { title:'Apprentice', icon:'📘', color:'#22c55e', minLevel:4 },
+  { title:'Warrior',    icon:'⚔️', color:'#3b82f6', minLevel:7 },
+  { title:'Knight',     icon:'🛡️', color:'#06b6d4', minLevel:10 },
+  { title:'Champion',   icon:'🏆', color:'#a855f7', minLevel:13 },
+  { title:'Hero',       icon:'🦸', color:'#ec4899', minLevel:16 },
+  { title:'Legend',     icon:'🌟', color:'#f59e0b', minLevel:19 },
+  { title:'Mythic',     icon:'👑', color:'#fbbf24', minLevel:22 },
+];
+const getTitle = (level) => CLASS_DATA[Math.min(Math.floor((level - 1) / 3), CLASS_DATA.length - 1)].title;
+const getClassData = (level) => CLASS_DATA[Math.min(Math.floor((level - 1) / 3), CLASS_DATA.length - 1)];
 const xpForLevel = (level) => level * 120;
+
+// Journey milestones for the progress map
+const JOURNEY_MILESTONES = [
+  { level:1,  label:'Begin',       icon:'🌱', desc:'Your adventure starts here' },
+  { level:5,  label:'Proven',      icon:'⚔️', desc:'No longer a beginner' },
+  { level:10, label:'Veteran',     icon:'🛡️', desc:'Battle-hardened adventurer' },
+  { level:15, label:'Elite',       icon:'🔥', desc:'Among the top ranks' },
+  { level:25, label:'Legendary',   icon:'🌟', desc:'Your name echoes in halls' },
+  { level:50, label:'Ascended',    icon:'👑', desc:'Transcended mortal limits' },
+];
+
+// Combo thresholds
+const COMBO_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+const getComboBonus = (combo) => {
+  if (combo >= 5) return 0.30;
+  if (combo >= 3) return 0.20;
+  if (combo >= 2) return 0.10;
+  return 0;
+};
+
+// Lucky drop system
+const rollLuckyDrop = () => {
+  if (Math.random() > 0.15) return null; // 15% chance
+  const roll = Math.random();
+  if (roll < 0.60) return { tier:'common',    gold: 5 + Math.floor(Math.random() * 11), xp: 0, label:'a few coins' };
+  if (roll < 0.90) return { tier:'rare',      gold: 20 + Math.floor(Math.random() * 31), xp: 15 + Math.floor(Math.random() * 20), label:'rare loot' };
+  return               { tier:'legendary', gold: 50 + Math.floor(Math.random() * 51), xp: 40 + Math.floor(Math.random() * 30), label:'LEGENDARY loot' };
+};
 const today = () => new Date().toDateString();
 const toDateKey = (date) => {
   const d = date instanceof Date ? date : new Date(date);
@@ -98,7 +136,7 @@ const generateDailyChallenges = (player, quests, skills) => {
   return selected;
 };
 
-export { CATEGORIES };
+export { CATEGORIES, CLASS_DATA, JOURNEY_MILESTONES };
 
 export const GameProvider = ({ children }) => {
   const [heroName, setHeroName] = useState(() => load('lq_heroName', ''));
@@ -141,6 +179,7 @@ export const GameProvider = ({ children }) => {
   const [dailyChallenges, setDailyChallenges] = useState(() => generateDailyChallenges(player, quests, skills));
   const [history, setHistory] = useState(() => load('lq_history', []));
   const [showConfetti, setShowConfetti] = useState(false);
+  const [comboCount, setComboCount] = useState(() => load('lq_combo', { count: 0, lastTime: 0 }));
 
   // Persist
   useEffect(() => { localStorage.setItem('lq_player', JSON.stringify(player)); }, [player]);
@@ -150,6 +189,7 @@ export const GameProvider = ({ children }) => {
   useEffect(() => { localStorage.setItem('lq_schedules', JSON.stringify(allSchedules)); }, [allSchedules]);
   useEffect(() => { localStorage.setItem('lq_heroName', JSON.stringify(heroName)); }, [heroName]);
   useEffect(() => { localStorage.setItem('lq_history', JSON.stringify(history)); }, [history]);
+  useEffect(() => { localStorage.setItem('lq_combo', JSON.stringify(comboCount)); }, [comboCount]);
 
   // Record daily history
   useEffect(() => {
@@ -348,6 +388,13 @@ export const GameProvider = ({ children }) => {
     });
   }, [addToast, triggerConfetti]);
 
+  // Auto-check achievements when state changes
+  useEffect(() => {
+    if (heroName) {
+      checkAchievements(player, quests, skills);
+    }
+  }, [player, quests, skills, heroName, checkAchievements]);
+
   // Streak check on load
   useEffect(() => {
     const t = today();
@@ -372,11 +419,42 @@ export const GameProvider = ({ children }) => {
     if (!quest || quest.status === 'completed') return;
 
     const completedAt = new Date().toISOString();
+    const now = Date.now();
 
     setQuests(prev => prev.map(q => q.id === id ? { ...q, status:'completed', completedAt } : q));
 
-    gainXp(quest.xpReward || 20);
+    // --- Combo system ---
+    const timeSinceLast = now - comboCount.lastTime;
+    const newComboCount = (timeSinceLast <= COMBO_WINDOW_MS && comboCount.count > 0) ? comboCount.count + 1 : 1;
+    setComboCount({ count: newComboCount, lastTime: now });
+
+    if (newComboCount >= 3) {
+      addToast({
+        type: 'achievement',
+        icon: '🔥',
+        title: `x${newComboCount} COMBO!`,
+        desc: newComboCount >= 5 ? 'COMBO MASTER! +30% bonus XP!' : `+${Math.round(getComboBonus(newComboCount) * 100)}% bonus XP!`
+      });
+    }
+
+    // --- Base rewards with combo bonus ---
+    const baseXp = quest.xpReward || 20;
+    const comboBonus = getComboBonus(newComboCount);
+    const comboXp = Math.round(baseXp * comboBonus);
+    gainXp(baseXp + comboXp);
     gainGold(quest.goldReward || 10);
+
+    // --- Lucky drop ---
+    const drop = rollLuckyDrop();
+    if (drop) {
+      setTimeout(() => {
+        if (drop.xp > 0) gainXp(drop.xp);
+        gainGold(drop.gold);
+        const tierEmoji = drop.tier === 'legendary' ? '💎' : drop.tier === 'rare' ? '✨' : '🪙';
+        addToast({ type: drop.tier === 'legendary' ? 'levelup' : 'reward', icon: tierEmoji, title: `Lucky Drop! ${drop.tier === 'legendary' ? '🎉' : ''}`, desc: `You found ${drop.label}! +${drop.gold} Gold${drop.xp > 0 ? ` +${drop.xp} XP` : ''}` });
+        if (drop.tier === 'legendary') triggerConfetti();
+      }, 600);
+    }
 
     const t = today();
     setPlayer(p => {
@@ -385,13 +463,12 @@ export const GameProvider = ({ children }) => {
       const updated = { ...p, totalQuests: newTotal, streakCount: newStreak, lastActiveDate: t };
       const updatedQuests = quests.map(q2 => q2.id === id ? { ...q2, status:'completed', completedAt } : q2);
       setTimeout(() => {
-        checkAchievements(updated, updatedQuests, skills);
         const todayDone = updatedQuests.filter(q2 => q2.status === 'completed' && q2.completedAt && new Date(q2.completedAt).toDateString() === new Date().toDateString()).length;
         updateChallengeProgress('quests_today', todayDone);
       }, 50);
       return updated;
     });
-  }, [quests, gainXp, gainGold, checkAchievements, skills, updateChallengeProgress]);
+  }, [quests, gainXp, gainGold, skills, updateChallengeProgress, addToast, triggerConfetti, comboCount]);
 
   const deleteQuest = useCallback((id) => {
     showConfirm('Delete this quest? This cannot be undone.', () => {
@@ -428,10 +505,9 @@ export const GameProvider = ({ children }) => {
       if (skill.id !== id) return skill;
       return { ...skill, xp: newXp, level: newLevel, trainedToday: true, lastTrainDate: t };
     });
-    checkAchievements(player, quests, updatedSkills);
     const trainedCount = updatedSkills.filter(s => s.trainedToday).length;
     updateChallengeProgress('skills_trained', trainedCount);
-  }, [skills, addToast, gainXp, player, quests, checkAchievements, updateChallengeProgress]);
+  }, [skills, addToast, gainXp, updateChallengeProgress]);
 
   const addSkill = useCallback((skill) => {
     setSkills(prev => [...prev, { ...skill, id:'s'+Date.now(), level:1, xp:0, trainedToday:false, lastTrainDate:null }]);
@@ -454,12 +530,11 @@ export const GameProvider = ({ children }) => {
     setPlayer(prev => ({ ...prev, totalFocus: prev.totalFocus + 1, lastActiveDate: t }));
 
     const updated = { ...player, totalFocus: player.totalFocus + 1, lastActiveDate: t };
-    checkAchievements(updated, quests, skills);
     updateChallengeProgress('focus_today', updated.totalFocus);
 
     addToast({ type:'reward', icon:'⚡', title:'Focus Complete!', desc:`Earned ${xpReward} XP and ${goldReward} Gold` });
     triggerConfetti();
-  }, [player, gainXp, gainGold, addToast, checkAchievements, quests, skills, triggerConfetti, updateChallengeProgress]);
+  }, [player, gainXp, gainGold, addToast, triggerConfetti, updateChallengeProgress]);
 
   const addScheduleItem = useCallback((hour, item) => {
     setAllSchedules(prev => ({
@@ -487,7 +562,7 @@ export const GameProvider = ({ children }) => {
 
   const resetAllData = useCallback(() => {
     showConfirm('⚠️ This will erase ALL your progress — level, quests, skills, achievements, schedules, and gold. This cannot be undone. Are you sure?', () => {
-      ['lq_player','lq_quests','lq_skills','lq_achievements','lq_schedules','lq_heroName','lq_history','lq_dailyChallenges','lq_lastRecurCheck','lq_shop'].forEach(k => localStorage.removeItem(k));
+      ['lq_player','lq_quests','lq_skills','lq_achievements','lq_schedules','lq_heroName','lq_history','lq_dailyChallenges','lq_lastRecurCheck','lq_shop','lq_combo'].forEach(k => localStorage.removeItem(k));
       setPlayer(DEFAULT_PLAYER);
       setQuests([]);
       setSkills(DEFAULT_SKILLS.map(s => ({ ...s })));
@@ -498,25 +573,42 @@ export const GameProvider = ({ children }) => {
       setShowOnboarding(true);
       setHistory([]);
       setDailyChallenges([]);
+      setComboCount({ count: 0, lastTime: 0 });
       closeConfirm();
       addToast({ type:'reward', icon:'🔄', title:'Data Reset', desc:'All progress has been cleared. Fresh start!' });
     });
   }, [showConfirm, closeConfirm, addToast]);
 
   const title = getTitle(player.level);
+  const classData = getClassData(player.level);
   const xpNeeded = xpForLevel(player.level);
   const xpPercent = (player.xp / xpNeeded) * 100;
   const activeQuestCount = quests.filter(q => q.status === 'active').length;
   const trainedTodayCount = skills.filter(s => s.trainedToday).length;
 
+  // Power Level = weighted combination of all stats
+  const powerLevel = useMemo(() => {
+    const lvlScore = player.level * 10;
+    const questScore = player.totalQuests * 2;
+    const streakScore = player.streakCount * 5;
+    const focusScore = player.totalFocus * 8;
+    const skillScore = skills.reduce((sum, s) => sum + s.level * 3, 0);
+    const goldScore = Math.floor(player.gold / 10);
+    return lvlScore + questScore + streakScore + focusScore + skillScore + goldScore;
+  }, [player.level, player.totalQuests, player.streakCount, player.totalFocus, player.gold, skills]);
+
+  // Check if combo is still active
+  const isComboActive = (Date.now() - comboCount.lastTime) <= COMBO_WINDOW_MS && comboCount.count >= 2;
+
   return (
     <GameContext.Provider value={{
-      player, heroName, title, xpNeeded, xpPercent,
+      player, heroName, title, classData, xpNeeded, xpPercent,
       quests, skills, achievements, schedule,
       toasts, floatingXps, confirmDialog,
       showOnboarding, activeQuestCount, trainedTodayCount,
       selectedDate, setSelectedDate,
       dailyChallenges, history, showConfetti,
+      powerLevel, comboCount: comboCount.count, isComboActive,
       saveHeroName, setShowOnboarding,
       gainXp, gainGold, spendGold, takeDamage,
       addQuest, completeQuest, deleteQuest,

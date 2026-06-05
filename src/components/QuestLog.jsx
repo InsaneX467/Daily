@@ -164,9 +164,9 @@ export default function QuestLog() {
         </div>
         {/* Category and recurring row */}
         <div style={{ display:'flex', gap:8, alignItems:'center', flexWrap:'wrap' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:6, flexWrap:'wrap' }}>
-            <span style={{ fontSize:12, color:'var(--text-secondary)' }}>Category:</span>
-            <div style={{ display:'flex', gap:4 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:6, flex:1, minWidth:0 }}>
+            <span style={{ fontSize:12, color:'var(--text-secondary)', flexShrink:0 }}>Category:</span>
+            <div className="category-chips" style={{ flex:1, minWidth:0 }}>
               {CATEGORIES.map(cat => (
                 <button key={cat.id} type="button" onClick={() => setCategory(cat.id)}
                   style={{
@@ -213,7 +213,7 @@ export default function QuestLog() {
           <div style={{ marginTop:16, display:'flex', flexDirection:'column', gap:14 }}>
             <p style={{ fontSize:12, color:'var(--text-muted)' }}>Click any quest below to instantly add it. Already-added quests are dimmed.</p>
             {/* Category tabs */}
-            <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            <div className="filter-scroll-row">
               <button className={`btn btn-sm ${templateCat === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTemplateCat('all')} style={{ fontSize:12 }}>All</button>
               {CATEGORIES.filter(c => c.id !== 'other').map(cat => (
                 <button key={cat.id} className={`btn btn-sm ${templateCat === cat.id ? 'btn-primary' : 'btn-ghost'}`}
@@ -223,7 +223,7 @@ export default function QuestLog() {
               ))}
             </div>
             {/* Template grid */}
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:8 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:8 }}>
               {filteredTemplates.map((t, i) => {
                 const cfg = DIFF_CONFIG[t.difficulty];
                 const cat = CATEGORIES.find(c => c.id === t.category);
@@ -265,7 +265,7 @@ export default function QuestLog() {
       </div>
 
       {/* Filter bar */}
-      <div style={{ display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
+      <div className="filter-scroll-row">
         <span style={{ fontSize:12, color:'var(--text-secondary)' }}>Rank:</span>
         <button className={`btn btn-sm ${filter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setFilter('all')} style={{ fontSize:12 }}>All</button>
         {Object.entries(DIFF_CONFIG).map(([k, v]) => {
@@ -279,7 +279,7 @@ export default function QuestLog() {
         })}
       </div>
       {/* Category filter */}
-      <div style={{ display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
+      <div className="filter-scroll-row">
         <span style={{ fontSize:13, color:'var(--text-secondary)', marginRight:4 }}>Category:</span>
         <button className={`btn btn-sm ${catFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setCatFilter('all')} style={{ fontSize:12 }}>All</button>
         {CATEGORIES.map(cat => {

@@ -101,7 +101,7 @@ function OnboardingModal({ onSave }) {
         </p>
 
         {/* Mini feature tour */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8, marginBottom:24, textAlign:'center' }}>
+        <div className="onboarding-features" style={{ marginBottom:24, textAlign:'center' }}>
           {[
             { icon:'📝', title:'Add Quests', desc:'Turn your tasks into quests with XP & Gold rewards' },
             { icon:'📈', title:'Level Up', desc:'Earn XP to level up and unlock new titles' },
@@ -147,7 +147,7 @@ function ConfirmDialog({ dialog, onClose }) {
 }
 
 function App() {
-  const { player, heroName, title, xpPercent, toasts, floatingXps, confirmDialog, closeConfirm,
+  const { player, heroName, title, classData, xpPercent, toasts, floatingXps, confirmDialog, closeConfirm,
     showOnboarding, saveHeroName, activeQuestCount, trainedTodayCount, skills, resetAllData, showConfetti } = useGame();
   const [activeTab, setActiveTab] = useState('dashboard');
 
@@ -205,7 +205,7 @@ function App() {
           <div className="level-orb">{player.level}</div>
           <div className="player-info">
             <div className="player-name">{heroName || 'Hero'}</div>
-            <div className="player-title">{title}</div>
+            <div className="player-title" style={{ color:classData.color }}>{classData.icon} {title}</div>
           </div>
           <div className="mobile-stats">
             <span className="stat-chip gold">💰 {player.gold}</span>
@@ -224,7 +224,7 @@ function App() {
             <div className="level-orb">{player.level}</div>
             <div className="player-info">
               <div className="player-name">{heroName || 'Hero'}</div>
-              <div className="player-title">{title}</div>
+              <div className="player-title" style={{ color:classData.color }}>{classData.icon} {title}</div>
               <div className="sidebar-xp-bar">
                 <div className="sidebar-xp-fill" style={{ width:`${xpPercent}%` }} />
               </div>

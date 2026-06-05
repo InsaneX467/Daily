@@ -74,7 +74,7 @@ export default function Achievements() {
       </div>
 
       {/* Tier filter */}
-      <div style={{ display:'flex', gap:6, flexWrap:'wrap', alignItems:'center' }}>
+      <div className="filter-scroll-row">
         <Filter size={14} color="var(--text-muted)" />
         <button className={`btn btn-sm ${tierFilter === 'all' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setTierFilter('all')} style={{ fontSize:12 }}>
           All ({achievements.length})

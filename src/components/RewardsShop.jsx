@@ -112,7 +112,7 @@ export default function RewardsShop() {
       </div>
 
       {/* Tier filter + Add button */}
-      <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
+      <div className="filter-scroll-row">
         <button className="btn btn-primary btn-sm" onClick={() => setShowAdd(!showAdd)}>
           {showAdd ? 'Cancel' : <><Plus size={14} /> Add Custom Reward</>}
         </button>
